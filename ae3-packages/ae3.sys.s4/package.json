@@ -1,0 +1,6 @@
+{
+	"type" : "ae3.Package",
+	"name" : "ae3.s4",
+	"description" : "AE3 S4 Storage SDK",
+	"requires" : "ae3.vfs"
+}
