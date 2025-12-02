@@ -1,6 +1,5 @@
 package ru.myx.ae3.vfs.s4.driver;
 
-import java.util.Collection;
 import java.util.function.Function;
 
 import ru.myx.ae3.know.Guid;
@@ -27,6 +26,25 @@ public class S4WorkerTransactionNested<O extends RecImpl, R extends RefImpl<O>, 
 	}
 	
 	@Override
+	public void arsLinkDelete(final O container, final Guid key, final TreeLinkType mode, final long modified) throws Exception {
+		
+		this.iface.arsLinkDelete(container, key, mode, modified);
+	}
+	
+	@Override
+	public void arsLinkUpdate(final O container, final O newContainer, final Guid key, final Guid newKey, final TreeLinkType mode, final long modified, final Guid value)
+			throws Exception {
+		
+		this.iface.arsLinkUpdate(container, newContainer, key, newKey, mode, modified, value);
+	}
+	
+	@Override
+	public void arsLinkUpsert(final O container, final Guid key, final TreeLinkType mode, final long modified, final Guid value) throws Exception {
+		
+		this.iface.arsLinkUpsert(container, key, mode, modified, value);
+	}
+	
+	@Override
 	public void arsRecordDelete(final O record) throws Exception {
 		
 		this.iface.arsRecordDelete(record);
@@ -48,25 +66,6 @@ public class S4WorkerTransactionNested<O extends RecImpl, R extends RefImpl<O>, 
 	public void commit() throws Exception {
 		
 		//
-	}
-	
-	@Override
-	public void arsLinkDelete(final O container, final Guid key, final TreeLinkType mode, final long modified) throws Exception {
-		
-		this.iface.arsLinkDelete(container, key, mode, modified);
-	}
-	
-	@Override
-	public void arsLinkUpdate(final O container, final O newContainer, final Guid key, final Guid newKey, final TreeLinkType mode, final long modified, final Guid value)
-			throws Exception {
-		
-		this.iface.arsLinkUpdate(container, newContainer, key, newKey, mode, modified, value);
-	}
-	
-	@Override
-	public void arsLinkUpsert(final O container, final Guid key, final TreeLinkType mode, final long modified, final Guid value) throws Exception {
-		
-		this.iface.arsLinkUpsert(container, key, mode, modified, value);
 	}
 	
 	@Override
@@ -95,13 +94,13 @@ public class S4WorkerTransactionNested<O extends RecImpl, R extends RefImpl<O>, 
 	}
 	
 	@Override
-	public int searchBetween(final Function<L, ?> target, final Guid key, final Guid value1, final Guid value2, final int limit) throws Exception {
+	public int searchBetween(final Function<R, ?> target, final Guid key, final Guid value1, final Guid value2, final int limit) throws Exception {
 		
 		return this.iface.searchBetween(target, key, value1, value2, limit);
 	}
 	
 	@Override
-	public int searchEquals(final Collection<L> target, final Guid key, final Guid value, final int limit) throws Exception {
+	public int searchEquals(final Function<R, ?> target, final Guid key, final Guid value, final int limit) throws Exception {
 		
 		return this.iface.searchEquals(target, key, value, limit);
 	}

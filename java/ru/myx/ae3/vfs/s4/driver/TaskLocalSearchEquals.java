@@ -67,6 +67,16 @@ final class TaskLocalSearchEquals //
 	}
 
 	@Override
+	public String toString() {
+
+		return "TASK_SEARCH_EQUALS(" + Format.Compact.toPeriod(System.currentTimeMillis() - this.started) + "): " //
+				+ this.record //
+				+ ", searchValue=" + this.searchValue //
+				+ ", leftTotal=" + this.leftTotal //
+		;
+	}
+
+	@Override
 	protected void execute(final S4WorkerContext context) throws Exception {
 
 		final int leftTotal = this.leftTotal;
@@ -78,7 +88,7 @@ final class TaskLocalSearchEquals //
 			this.leftCurrent = 0;
 		}
 
-		final S4WorkerInterface<RecImpl, RefImpl<RecImpl>, ?> xct = context.createGlobalCommonTransaction();
+		final S4WorkerInterface<RecImpl, RefImpl<RecImpl>, Object> xct = context.createGlobalCommonTransaction();
 		final int count = xct.searchEquals( //
 				this,
 				this.record.guid,
@@ -97,15 +107,5 @@ final class TaskLocalSearchEquals //
 		/** again, last item is used for getting the next keyStart */
 		this.leftTotal -= count - 1;
 		context.enqueue(this);
-	}
-
-	@Override
-	public String toString() {
-
-		return "TASK_SEARCH_EQUALS(" + Format.Compact.toPeriod(System.currentTimeMillis() - this.started) + "): " //
-				+ this.record //
-				+ ", searchValue=" + this.searchValue //
-				+ ", leftTotal=" + this.leftTotal //
-		;
 	}
 }

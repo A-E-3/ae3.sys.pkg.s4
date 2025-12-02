@@ -10,7 +10,9 @@ import ru.myx.ae3.vfs.s4.common.RefImpl;
 
 /** @author myx
  * @param <O>
+ *            -- record class
  * @param <R>
+ *            -- reference class
  * @param <L> */
 public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L extends Object> {
 
@@ -152,7 +154,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	 * @return count of records found (explicitly, runs synchonously)
 	 * @throws Exception */
 	int searchBetween(//
-			Function<L, ?> target,
+			Function<R, ?> target,
 			Guid key,
 			Guid value1,
 			Guid value2,
@@ -166,7 +168,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	 * @return count of records found (explicitly, runs synchonously)
 	 * @throws Exception */
 	int searchEquals(//
-			Collection<L> target,
+			Function<R, ?> target,
 			Guid key,
 			Guid value,
 			int limit) throws Exception;
