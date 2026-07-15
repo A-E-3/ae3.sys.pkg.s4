@@ -4,14 +4,14 @@ import java.util.function.Function;
 
 import ru.myx.ae3.help.Format;
 import ru.myx.ae3.vfs.TreeReadType;
-import ru.myx.ae3.vfs.s4.common.ArrImpl;
+import ru.myx.ae3.vfs.s4.common.ArrRefImpl;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
 import ru.myx.ae3.vfs.s4.common.RecInline;
 import ru.myx.ae3.vfs.s4.common.RefImpl;
 
 final class TaskLocalGetLinks //
 		extends
-			TaskCommon<ArrImpl<RefImpl<RecImpl>>>
+			TaskCommon<ArrRefImpl<RefImpl<RecImpl>>>
 		implements
 			Function<RefImpl<RecImpl>, Void> {
 
@@ -21,18 +21,18 @@ final class TaskLocalGetLinks //
 
 	private int leftCurrent;
 
-	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> local;
+	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> local;
 
 	private final TreeReadType mode;
 
 	private final RecImpl record;
 
-	private final ArrImpl<RefImpl<RecImpl>> result;
+	private final ArrRefImpl<RefImpl<RecImpl>> result;
 
 	private final long started = System.currentTimeMillis();
 
 	TaskLocalGetLinks(//
-			final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> local,
+			final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> local,
 			final RecImpl record,
 			final TreeReadType mode) {
 
@@ -41,7 +41,7 @@ final class TaskLocalGetLinks //
 		this.local = local;
 		this.record = record;
 		this.mode = mode;
-		this.result = new ArrImpl<>();
+		this.result = new ArrRefImpl<>();
 	}
 
 	@Override

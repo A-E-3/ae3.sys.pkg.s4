@@ -24,7 +24,7 @@ import ru.myx.ae3.report.ReportReceiver;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.vfs.TreeReadType;
 import ru.myx.ae3.vfs.ars.ArsStorage;
-import ru.myx.ae3.vfs.s4.common.ArrImpl;
+import ru.myx.ae3.vfs.s4.common.ArrRefImpl;
 import ru.myx.ae3.vfs.s4.common.ArsTransactionS4;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
 import ru.myx.ae3.vfs.s4.common.RecInline;
@@ -40,7 +40,7 @@ import ru.myx.util.WeakFinalizer;
 @ReflectionManual
 public class StorageImplS4 //
 		implements
-			ArsStorage<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>> {
+			ArsStorage<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>> {
 	
 	private static final WeakHashMap<String, StorageImplS4> INSTANCES = new WeakHashMap<>();
 	
@@ -92,7 +92,7 @@ public class StorageImplS4 //
 		StorageImplS4.LOG.event(owner, "ERROR", Format.Throwable.toText(message, t));
 	}
 	
-	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> driver;
+	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> driver;
 	
 	private String key;
 	
@@ -115,7 +115,7 @@ public class StorageImplS4 //
 	/** @param driver
 	 * @throws Exception */
 	@ReflectionExplicit
-	public StorageImplS4(final S4Driver<? extends RecImpl, ? extends RefImpl<RecImpl>, ? extends ArrImpl<RefImpl<RecImpl>>, Object> driver) throws Exception {
+	public StorageImplS4(final S4Driver<? extends RecImpl, ? extends RefImpl<RecImpl>, ? extends ArrRefImpl<RefImpl<RecImpl>>, Object> driver) throws Exception {
 		
 		this.driver = Convert.Any.toAny(driver);
 		this.start();
@@ -298,7 +298,7 @@ public class StorageImplS4 //
 	}
 	
 	@Override
-	public Value<ArrImpl<RefImpl<RecImpl>>> getLinks(final RecImpl object, final TreeReadType mode) {
+	public Value<ArrRefImpl<RefImpl<RecImpl>>> getLinks(final RecImpl object, final TreeReadType mode) {
 		
 		assert object != null : "Record shouldn't be NULL";
 		if (object.getClass() == RecInline.class || !object.isContainer()) {
@@ -314,7 +314,7 @@ public class StorageImplS4 //
 	}
 	
 	@Override
-	public Value<ArrImpl<RefImpl<RecImpl>>>
+	public Value<ArrRefImpl<RefImpl<RecImpl>>>
 			getLinksRange(final RecImpl object, final RecImpl keyStart, final RecImpl keyStop, final int limit, final boolean backwards, final TreeReadType mode) {
 		
 		assert object != null : "Record shouldn't be NULL";

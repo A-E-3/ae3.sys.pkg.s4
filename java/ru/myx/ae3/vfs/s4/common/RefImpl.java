@@ -53,6 +53,46 @@ public abstract class RefImpl<O extends RecImpl> //
 	 */
 	public O valueRecord;
 
+	/**
+	 *
+	 */
+	public RefImpl() {
+
+	}
+
+	/** @param collection
+	 * @param driver
+	 *            - driver or null
+	 * @param key
+	 *            - Giud for key
+	 * @param keyRecord
+	 *            - null or record object
+	 * @param mode
+	 * @param modified
+	 * @param value
+	 *            - Guid for value
+	 * @param valueRecord
+	 *            - null or value object */
+	public RefImpl(//
+			final O collection,
+			final S4Driver<O, ?, ?, ?> driver,
+			final Guid key,
+			final O keyRecord,
+			final TreeLinkType mode,
+			final long modified,
+			final Guid value,
+			final O valueRecord) {
+
+		this.collection = collection;
+		this.driver = driver;
+		this.key = key;
+		this.keyRecord = keyRecord;
+		this.mode = mode;
+		this.modified = modified;
+		this.value = value;
+		this.valueRecord = valueRecord;
+	}
+
 	@Override
 	public final RefImpl<O> baseValue() {
 

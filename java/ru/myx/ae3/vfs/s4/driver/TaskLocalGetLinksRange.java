@@ -4,14 +4,14 @@ import java.util.function.Function;
 
 import ru.myx.ae3.help.Format;
 import ru.myx.ae3.vfs.TreeReadType;
-import ru.myx.ae3.vfs.s4.common.ArrImpl;
+import ru.myx.ae3.vfs.s4.common.ArrRefImpl;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
 import ru.myx.ae3.vfs.s4.common.RecInline;
 import ru.myx.ae3.vfs.s4.common.RefImpl;
 
 final class TaskLocalGetLinksRange //
 		extends
-			TaskCommon<ArrImpl<RefImpl<RecImpl>>>
+			TaskCommon<ArrRefImpl<RefImpl<RecImpl>>>
 		implements
 			Function<RefImpl<RecImpl>, Void> {
 	
@@ -30,18 +30,18 @@ final class TaskLocalGetLinksRange //
 	
 	private int leftTotal;
 	
-	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> local;
+	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> local;
 	
 	private final TreeReadType mode;
 	
 	private final RecImpl record;
 	
-	private final ArrImpl<RefImpl<RecImpl>> result;
+	private final ArrRefImpl<RefImpl<RecImpl>> result;
 	
 	private final long started = System.currentTimeMillis();
 	
 	TaskLocalGetLinksRange(//
-			final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> local,
+			final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> local,
 			final RecImpl record,
 			final RecImpl keyStart,
 			final RecImpl keyStop,
@@ -58,7 +58,7 @@ final class TaskLocalGetLinksRange //
 		this.leftTotal = limit;
 		this.backwards = backwards;
 		this.mode = mode;
-		this.result = new ArrImpl<>();
+		this.result = new ArrRefImpl<>();
 	}
 	
 	@Override

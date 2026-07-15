@@ -9,7 +9,7 @@ import ru.myx.ae3.common.Value;
 import ru.myx.ae3.know.Guid;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.vfs.TreeReadType;
-import ru.myx.ae3.vfs.s4.common.ArrImpl;
+import ru.myx.ae3.vfs.s4.common.ArrRefImpl;
 import ru.myx.ae3.vfs.s4.common.ArsTransactionS4;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
 import ru.myx.ae3.vfs.s4.common.RefImpl;
@@ -22,10 +22,10 @@ import ru.myx.ae3.vfs.s4.net.S4Network;
 /** @author myx */
 public class S4ClusterDriver //
 		implements
-			S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> {
+			S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> {
 
 	/** WARNING, casted to this type - use only instances provided by implementation. */
-	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> cacheLocal;
+	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> cacheLocal;
 
 	private final File extraFolder;
 
@@ -34,7 +34,7 @@ public class S4ClusterDriver //
 	private final S4ClusterDriver loopback;
 
 	/** WARNING, casted to this type - use only instances provided by implementation. */
-	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> nextLocal;
+	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> nextLocal;
 
 	private final S4Network nextNetwork;
 
@@ -45,7 +45,7 @@ public class S4ClusterDriver //
 	private final long pointPrev;
 
 	/** WARNING, casted to this type - use only instances provided by implementation. */
-	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> prevLocal;
+	private final S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> prevLocal;
 
 	private final S4Network prevNetwork;
 
@@ -187,13 +187,13 @@ public class S4ClusterDriver //
 	}
 
 	@Override
-	public Value<ArrImpl<RefImpl<RecImpl>>> getLinks(final RecImpl record, final TreeReadType mode) {
+	public Value<ArrRefImpl<RefImpl<RecImpl>>> getLinks(final RecImpl record, final TreeReadType mode) {
 
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Value<ArrImpl<RefImpl<RecImpl>>>
+	public Value<ArrRefImpl<RefImpl<RecImpl>>>
 			getLinksRange(final RecImpl record, final RecImpl keyStart, final RecImpl keyStop, final int limit, final boolean backwards, final TreeReadType mode) {
 
 		throw new UnsupportedOperationException();

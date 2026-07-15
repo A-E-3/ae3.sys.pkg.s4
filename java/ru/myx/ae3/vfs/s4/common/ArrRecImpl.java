@@ -2,15 +2,15 @@ package ru.myx.ae3.vfs.s4.common;
 
 import java.util.ArrayList;
 
-import ru.myx.ae3.vfs.ars.ArsArray;
+import ru.myx.ae3.vfs.ars.ArsRecArray;
 
 /** @author myx
- * @param <R> */
-public class ArrImpl<R extends RefImpl<? extends RecImpl>> //
+ * @param <O> */
+public class ArrRecImpl<O extends RecImpl> //
 		extends
-			ArrayList<R>
+			ArrayList<O>
 		implements
-			ArsArray<R> {
+			ArsRecArray<O> {
 
 	/**
 	 *

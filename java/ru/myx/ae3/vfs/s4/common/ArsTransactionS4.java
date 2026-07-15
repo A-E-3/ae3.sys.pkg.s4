@@ -12,7 +12,7 @@ import ru.myx.ae3.vfs.ars.ArsTransaction;
 /** @author myx */
 public abstract class ArsTransactionS4 //
 		implements
-			ArsTransaction<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>> {
+			ArsTransaction<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>> {
 
 	Map<Guid, Object> deleteItems = null;
 
@@ -118,13 +118,13 @@ public abstract class ArsTransactionS4 //
 	}
 
 	@Override
-	public Value<ArrImpl<RefImpl<RecImpl>>> getLinks(final RecImpl object, final TreeReadType mode) {
+	public Value<ArrRefImpl<RefImpl<RecImpl>>> getLinks(final RecImpl object, final TreeReadType mode) {
 
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Value<ArrImpl<RefImpl<RecImpl>>>
+	public Value<ArrRefImpl<RefImpl<RecImpl>>>
 			getLinksRange(final RecImpl object, final RecImpl keyStart, final RecImpl keyStop, final int limit, final boolean backwards, final TreeReadType mode) {
 
 		throw new UnsupportedOperationException();

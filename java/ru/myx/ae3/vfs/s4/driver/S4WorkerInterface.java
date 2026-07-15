@@ -3,6 +3,7 @@ package ru.myx.ae3.vfs.s4.driver;
 import java.util.Collection;
 import java.util.function.Function;
 
+import ru.myx.ae3.common.Value;
 import ru.myx.ae3.know.Guid;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
@@ -15,7 +16,7 @@ import ru.myx.ae3.vfs.s4.common.RefImpl;
  *            -- reference class
  * @param <L> */
 public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L extends Object> {
-
+	
 	/** Deletes a reference (unlinks/drops link)
 	 *
 	 * @param record
@@ -28,7 +29,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 			Guid key,
 			TreeLinkType mode,
 			long modified) throws Exception;
-
+	
 	/** Updates existing reference, including move and rename. Modified date always updated to given
 	 * value, except -1 make it current date.
 	 *
@@ -48,7 +49,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 			TreeLinkType mode,
 			long modified,
 			Guid value) throws Exception;
-
+	
 	/** Upserts new or existing record. Modified date of -1 will set currenrt date if there are any
 	 * other changes to a record (not really a good idea for different implementations).
 	 *
@@ -64,41 +65,41 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 			TreeLinkType mode,
 			long modified,
 			Guid value) throws Exception;
-
+	
 	/** this method is ONLY called by storage garbage collection mechanism.
 	 *
 	 * @param record
 	 * @throws Exception */
 	void arsRecordDelete(//
 			O record) throws Exception;
-
+	
 	/** this method is ONLY called by storage garbage collection mechanism.
 	 *
 	 * @param records
 	 * @throws Exception */
 	default void arsRecordsDelete(final Collection<O> records) throws Exception {
-
+		
 		for (final O record : records) {
 			this.arsRecordDelete(record);
 		}
 	}
-
+	
 	/** this method is ONLY called by storage garbage collection mechanism.
 	 *
 	 * @param records
 	 * @throws Exception */
 	default void arsRecordsUpsert(final Collection<O> records) throws Exception {
-
+		
 		for (final O record : records) {
 			this.arsRecordUpsert(record);
 		}
 	}
-
+	
 	/** @param record
 	 * @throws Exception */
 	void arsRecordUpsert(//
 			O record) throws Exception;
-
+	
 	/** Should initialize fields: 'key', 'mode', 'modified', 'value'
 	 *
 	 * @param target
@@ -120,7 +121,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 			Guid keyStop,
 			int limit,
 			boolean backwards) throws Exception;
-
+	
 	/** Should initialize fields: 'key', 'mode', 'modified', 'value'
 	 *
 	 * @param record
@@ -130,13 +131,13 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	R readContainerElement(//
 			O record,
 			Guid key) throws Exception;
-
+	
 	/** @param guid
 	 * @return
 	 * @throws Exception */
 	O readRecord(//
 			Guid guid) throws Exception;
-
+	
 	/** For tails - GUID type CRC384_XXXXXX for TAIL_CAPACITY (1500) bytes length binaries only!
 	 *
 	 * @param record
@@ -144,7 +145,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	 * @throws Exception */
 	byte[] readRecordTail(//
 			O record) throws Exception;
-
+	
 	/** @param target
 	 * @param key
 	 * @param value1
@@ -154,12 +155,12 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	 * @return count of records found (explicitly, runs synchonously)
 	 * @throws Exception */
 	int searchBetween(//
-			Function<R, ?> target,
+			Function<Value<O>, ?> target,
 			Guid key,
 			Guid value1,
 			Guid value2,
 			int limit) throws Exception;
-
+	
 	/** @param target
 	 * @param key
 	 * @param value
@@ -168,7 +169,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	 * @return count of records found (explicitly, runs synchonously)
 	 * @throws Exception */
 	int searchEquals(//
-			Function<R, ?> target,
+			Function<Value<O>, ?> target,
 			Guid key,
 			Guid value,
 			int limit) throws Exception;

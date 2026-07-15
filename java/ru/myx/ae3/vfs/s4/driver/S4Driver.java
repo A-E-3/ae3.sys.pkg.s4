@@ -6,7 +6,7 @@ import ru.myx.ae3.common.Value;
 import ru.myx.ae3.know.Guid;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.vfs.TreeReadType;
-import ru.myx.ae3.vfs.s4.common.ArrImpl;
+import ru.myx.ae3.vfs.s4.common.ArrRefImpl;
 import ru.myx.ae3.vfs.s4.common.ArsTransactionS4;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
 import ru.myx.ae3.vfs.s4.common.RefImpl;
@@ -18,7 +18,7 @@ import ru.myx.ae3.vfs.s4.common.RepairChecker;
  * @param <R>
  * @param <A>
  * @param <L> */
-public interface S4Driver<O extends RecImpl, R extends RefImpl<O>, A extends ArrImpl<R>, L extends Object> {
+public interface S4Driver<O extends RecImpl, R extends RefImpl<O>, A extends ArrRefImpl<R>, L extends Object> {
 
 	/** This key defines a link from Root Record to a 'mounted' attribute, to check if this instance
 	 * was dismounted successfully. */
@@ -98,7 +98,7 @@ public interface S4Driver<O extends RecImpl, R extends RefImpl<O>, A extends Arr
 	 * @param record
 	 * @param mode
 	 * @return */
-	Value<ArrImpl<RefImpl<RecImpl>>> getLinks(O record, TreeReadType mode);
+	Value<ArrRefImpl<RefImpl<RecImpl>>> getLinks(O record, TreeReadType mode);
 
 	/** @param record
 	 * @param keyStart
@@ -107,7 +107,7 @@ public interface S4Driver<O extends RecImpl, R extends RefImpl<O>, A extends Arr
 	 * @param backwards
 	 * @param mode
 	 * @return */
-	Value<ArrImpl<RefImpl<RecImpl>>> getLinksRange(O record, O keyStart, O keyStop, int limit, boolean backwards, TreeReadType mode);
+	Value<ArrRefImpl<RefImpl<RecImpl>>> getLinksRange(O record, O keyStart, O keyStop, int limit, boolean backwards, TreeReadType mode);
 
 	/** Get Record implementation for GUID
 	 *

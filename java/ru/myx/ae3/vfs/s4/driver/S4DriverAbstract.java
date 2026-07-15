@@ -13,7 +13,7 @@ import ru.myx.ae3.report.EventLevel;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.vfs.TreeReadType;
 import ru.myx.ae3.vfs.s4.StorageImplS4;
-import ru.myx.ae3.vfs.s4.common.ArrImpl;
+import ru.myx.ae3.vfs.s4.common.ArrRefImpl;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
 import ru.myx.ae3.vfs.s4.common.RecInline;
 import ru.myx.ae3.vfs.s4.common.RecTemplate;
@@ -25,7 +25,7 @@ import ru.myx.ae3.vfs.s4.impl.S4TreeDriver;
 /** @author myx */
 public abstract class S4DriverAbstract //
 		implements
-			S4Driver<RecImpl, RefImpl<RecImpl>, ArrImpl<RefImpl<RecImpl>>, Object> {
+			S4Driver<RecImpl, RefImpl<RecImpl>, ArrRefImpl<RefImpl<RecImpl>>, Object> {
 
 	final static CacheRecord.Mode CACHE_RECORD_MODE = CacheRecord.Mode.getDefaultMode();
 
@@ -73,7 +73,9 @@ public abstract class S4DriverAbstract //
 
 	/** @param driver
 	 * @param type */
-	protected S4DriverAbstract(final S4TreeDriver<RecImpl, RefImpl<RecImpl>, Object> driver, final S4StoreType type) {
+	protected S4DriverAbstract(//
+			final S4TreeDriver<RecImpl, RefImpl<RecImpl>, Object> driver,
+			final S4StoreType type) {
 
 		this.driver = driver;
 		this.type = type;
@@ -96,7 +98,7 @@ public abstract class S4DriverAbstract //
 		}
 		return result;
 	}
-	
+
 	@Override
 	public RepairChecker createCheckContext(final BaseObject properties) {
 
@@ -121,50 +123,6 @@ public abstract class S4DriverAbstract //
 		assert (result.runtimeState & RecImpl.RT_TEMPLATE) == 0 : "Use of system-reserved bits!";
 		result.runtimeState &= ~RecImpl.RT_TEMPLATE;
 		return result;
-	}
-
-	short createScheduleFresh() {
-
-		final int realTicks = this.scheduleTicks & 0x7FFFFFFF;
-		final int scheduleTicks = realTicks / 6;
-		final double delay = this.type.scheduleTicksFresh();
-		final S4ScheduleType slot = S4ScheduleType.randomFreshSlot();
-		final int limit = slot.scheduleTicks();
-		if (delay <= limit) {
-			/** next check: (100 - 10)% to (100 + 25)% of requested delay. */
-			final short randomized = (short) Math.min(limit, delay + delay * (Engine.createRandom(14000) - 4000) / 40000);
-			return (short) (slot.baseOffset() + (scheduleTicks + randomized) % limit);
-		}
-		throw new IllegalArgumentException("Fresh schedule delay: " + delay + " minutes is not supported!");
-	}
-
-	/** @param currentValue
-	 *            record's current schedule value
-	 * @param rewriteProbability
-	 *            0.0 to 1.0, the probability that schedule will be rewritten when there is no need
-	 *            to.
-	 * @return */
-	short createScheduleReferenced(final short currentValue, final double rewriteProbability) {
-
-		final int realTicks = this.scheduleTicks & 0x7FFFFFFF;
-		final int scheduleTicks = realTicks / 6;
-
-		/** already in range of SEVEN_DAY_REFERENCED schedule? */
-		if (currentValue >= S4ScheduleType.REFERENCED_START_INCLUDING && currentValue < S4ScheduleType.REFERENCED_STOP_EXCLUDING) {
-			/** higher probability of keeping the same value, less writes */
-			if (rewriteProbability < 1.0 && Engine.createRandomDouble() >= rewriteProbability) {
-				return currentValue;
-			}
-		}
-
-		{
-			final double delay = 7 * 24 * 60;
-			final S4ScheduleType slot = S4ScheduleType.randomReferencedSlot();
-			final short limit = slot.scheduleTicks();
-			/** next check: 75% to 100% of full loop. */
-			final short randomized = (short) Math.min(limit, delay + delay * (Engine.createRandom(10000) - 10000) / 40000);
-			return (short) (slot.baseOffset() + (scheduleTicks + randomized) % limit);
-		}
 	}
 
 	@Override
@@ -195,7 +153,7 @@ public abstract class S4DriverAbstract //
 		if (record == newRecord) {
 			return this.doLinkRename(template, newRecord, key, newKey, mode, modified, value);
 		}
-		
+
 		final RefImpl<RecImpl> templateToUse;
 		if (template == null) {
 			templateToUse = this.driver.createReferenceTemplate();
@@ -245,8 +203,13 @@ public abstract class S4DriverAbstract //
 	}
 
 	@Override
-	public final Value<RefImpl<RecImpl>>
-			doLinkSet(final RefImpl<RecImpl> template, final RecImpl record, final RecImpl key, final TreeLinkType mode, final long modified, final RecImpl value) {
+	public final Value<RefImpl<RecImpl>> doLinkSet(//
+			final RefImpl<RecImpl> template,
+			final RecImpl record,
+			final RecImpl key,
+			final TreeLinkType mode,
+			final long modified,
+			final RecImpl value) {
 
 		final RefImpl<RecImpl> templateToUse;
 		if (template == null) {
@@ -266,33 +229,11 @@ public abstract class S4DriverAbstract //
 		return task;
 	}
 
-	/** public, a generic task
-	 *
-	 * @param task */
-	protected abstract void enqueue(TaskCommon<?> task);
-
-	/** @throws Exception */
-	protected void executeDriverShutdown() throws Exception {
-
-		//
-	}
-
-	/** @throws Exception */
-	protected void executeDriverStart() throws Exception {
-
-		new ServiceThread<>(null, this.recordsMaintainer).start();
-	}
-
-	/** @throws Exception */
-	protected void executeDriverTerminate() throws Exception {
-
-		/** done in 'stop' */
-		// this.recordsMaintainer.stop();
-		// this.records.clear();
-	}
-
 	@Override
-	public final Value<RefImpl<RecImpl>> getLink(final RecImpl record, final RecImpl key, final TreeLinkType mode) {
+	public final Value<RefImpl<RecImpl>> getLink(//
+			final RecImpl record,
+			final RecImpl key,
+			final TreeLinkType mode) {
 
 		final TaskCommon<RefImpl<RecImpl>> task = new TaskLocalGetLink(record, key, mode);
 		this.enqueue(task);
@@ -300,24 +241,31 @@ public abstract class S4DriverAbstract //
 	}
 
 	@Override
-	public final Value<ArrImpl<RefImpl<RecImpl>>> getLinks(final RecImpl record, final TreeReadType mode) {
+	public final Value<ArrRefImpl<RefImpl<RecImpl>>> getLinks(//
+			final RecImpl record,
+			final TreeReadType mode) {
 
 		assert record != null : "Record shouldn't be NULL";
 		assert record.getClass() != RecInline.class : "GetLinks - INLINE source!";
 		assert record.isContainer() : "GetLinks - not a container source!";
-		final TaskCommon<ArrImpl<RefImpl<RecImpl>>> task = new TaskLocalGetLinks(this, record, mode);
+		final TaskCommon<ArrRefImpl<RefImpl<RecImpl>>> task = new TaskLocalGetLinks(this, record, mode);
 		this.enqueue(task);
 		return task;
 	}
 
 	@Override
-	public final Value<ArrImpl<RefImpl<RecImpl>>>
-			getLinksRange(final RecImpl record, final RecImpl keyStart, final RecImpl keyStop, final int limit, final boolean backwards, final TreeReadType mode) {
+	public final Value<ArrRefImpl<RefImpl<RecImpl>>> getLinksRange(//
+			final RecImpl record,
+			final RecImpl keyStart,
+			final RecImpl keyStop,
+			final int limit,
+			final boolean backwards,
+			final TreeReadType mode) {
 
 		assert record != null : "Record shouldn't be NULL";
 		assert record.getClass() != RecInline.class : "GetLinks - INLINE source!";
 		assert record.isContainer() : "GetLinks - not a container source!";
-		final TaskCommon<ArrImpl<RefImpl<RecImpl>>> task = new TaskLocalGetLinksRange(this, record, keyStart, keyStop, limit, backwards, mode);
+		final TaskCommon<ArrRefImpl<RefImpl<RecImpl>>> task = new TaskLocalGetLinksRange(this, record, keyStart, keyStop, limit, backwards, mode);
 		this.enqueue(task);
 		return task;
 	}
@@ -394,5 +342,74 @@ public abstract class S4DriverAbstract //
 	public String toString() {
 
 		return "[object " + this.getClass().getSimpleName() + "(" + this.driver + ")]";
+	}
+
+	/** public, a generic task
+	 *
+	 * @param task */
+	protected abstract void enqueue(TaskCommon<?> task);
+
+	/** @throws Exception */
+	protected void executeDriverShutdown() throws Exception {
+
+		//
+	}
+
+	/** @throws Exception */
+	protected void executeDriverStart() throws Exception {
+
+		new ServiceThread<>(null, this.recordsMaintainer).start();
+	}
+
+	/** @throws Exception */
+	protected void executeDriverTerminate() throws Exception {
+
+		/** done in 'stop' */
+		// this.recordsMaintainer.stop();
+		// this.records.clear();
+	}
+
+	short createScheduleFresh() {
+
+		final int realTicks = this.scheduleTicks & 0x7FFFFFFF;
+		final int scheduleTicks = realTicks / 6;
+		final double delay = this.type.scheduleTicksFresh();
+		final S4ScheduleType slot = S4ScheduleType.randomFreshSlot();
+		final int limit = slot.scheduleTicks();
+		if (delay <= limit) {
+			/** next check: (100 - 10)% to (100 + 25)% of requested delay. */
+			final short randomized = (short) Math.min(limit, delay + delay * (Engine.createRandom(14000) - 4000) / 40000);
+			return (short) (slot.baseOffset() + (scheduleTicks + randomized) % limit);
+		}
+		throw new IllegalArgumentException("Fresh schedule delay: " + delay + " minutes is not supported!");
+	}
+
+	/** @param currentValue
+	 *            record's current schedule value
+	 * @param rewriteProbability
+	 *            0.0 to 1.0, the probability that schedule will be rewritten when there is no need
+	 *            to.
+	 * @return */
+	short createScheduleReferenced(final short currentValue, final double rewriteProbability) {
+
+		final int realTicks = this.scheduleTicks & 0x7FFFFFFF;
+		final int scheduleTicks = realTicks / 6;
+
+		/** already in range of SEVEN_DAY_REFERENCED schedule? */
+		if (currentValue >= S4ScheduleType.REFERENCED_START_INCLUDING && currentValue < S4ScheduleType.REFERENCED_STOP_EXCLUDING) {
+			/** higher probability of keeping the same value, less writes */
+			if (rewriteProbability < 1.0 && Engine.createRandomDouble() >= rewriteProbability) {
+				return currentValue;
+			}
+		}
+
+		{
+			final double delay = 7 * 24 * 60;
+			final S4ScheduleType slot = S4ScheduleType.randomReferencedSlot();
+			final short limit = slot.scheduleTicks();
+			/** next check: 75% to 100% of full loop. */
+			final short randomized = (short) Math.min(limit, delay + delay * (Engine.createRandom(10000) - 10000) / 40000);
+			return (short) (slot.baseOffset() + (scheduleTicks + randomized) % limit);
+		}
 	}
 }
