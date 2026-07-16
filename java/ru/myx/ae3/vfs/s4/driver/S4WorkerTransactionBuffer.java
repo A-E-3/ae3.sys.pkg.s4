@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
 
-import ru.myx.ae3.common.Value;
 import ru.myx.ae3.know.Guid;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
@@ -123,7 +122,7 @@ public class S4WorkerTransactionBuffer<O extends RecImpl, R extends RefImpl<O>, 
 
 	@Override
 	public int searchBetween(//
-			final Function<Value<O>, ?> target,
+			final Function<O, ?> target,
 			final Guid key,
 			final Guid value1,
 			final Guid value2,
@@ -134,7 +133,7 @@ public class S4WorkerTransactionBuffer<O extends RecImpl, R extends RefImpl<O>, 
 
 	@Override
 	public int searchEquals(//
-			final Function<Value<O>, ?> target,
+			final Function<O, ?> target,
 			final Guid key,
 			final Guid value,
 			final int limit) throws Exception {

@@ -3,7 +3,6 @@ package ru.myx.ae3.vfs.s4.driver;
 import java.util.Collection;
 import java.util.function.Function;
 
-import ru.myx.ae3.common.Value;
 import ru.myx.ae3.know.Guid;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.vfs.s4.common.RecImpl;
@@ -146,7 +145,15 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	byte[] readRecordTail(//
 			O record) throws Exception;
 	
-	/** @param target
+	/** Searches the secondary index 'key' for records whose indexed value falls within
+	 * [value1, value2]. Target is invoked once per match with a partial O: 'luid' identifies the
+	 * matched record, and 'guid' - which is otherwise unused on this lookup-only path - instead
+	 * carries the matched index value itself (NOT the record's real identity), since that value
+	 * is required to resume pagination via a following call's 'value1' and isn't otherwise
+	 * recoverable from the record. Callers needing the record's real guid must resolve it
+	 * separately via {@link #readRecord}.
+	 *
+	 * @param target
 	 * @param key
 	 * @param value1
 	 * @param value2
@@ -155,13 +162,16 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	 * @return count of records found (explicitly, runs synchonously)
 	 * @throws Exception */
 	int searchBetween(//
-			Function<Value<O>, ?> target,
+			Function<O, ?> target,
 			Guid key,
 			Guid value1,
 			Guid value2,
 			int limit) throws Exception;
-	
-	/** @param target
+
+	/** Searches the secondary index 'key' for records whose indexed value equals 'value'. Target
+	 * is invoked per match the same way as {@link #searchBetween}.
+	 *
+	 * @param target
 	 * @param key
 	 * @param value
 	 * @param limit
@@ -169,7 +179,7 @@ public interface S4WorkerInterface<O extends RecImpl, R extends RefImpl<O>, L ex
 	 * @return count of records found (explicitly, runs synchonously)
 	 * @throws Exception */
 	int searchEquals(//
-			Function<Value<O>, ?> target,
+			Function<O, ?> target,
 			Guid key,
 			Guid value,
 			int limit) throws Exception;

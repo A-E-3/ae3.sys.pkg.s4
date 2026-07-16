@@ -2,8 +2,8 @@ package ru.myx.ae3.vfs.s4.driver;
 
 import java.util.function.Function;
 
-import ru.myx.ae3.common.Value;
 import ru.myx.ae3.help.Format;
+import ru.myx.ae3.know.Guid;
 import ru.myx.ae3.vfs.TreeReadType;
 import ru.myx.ae3.vfs.s4.common.ArrRecImpl;
 import ru.myx.ae3.vfs.s4.common.ArrRefImpl;
@@ -11,15 +11,15 @@ import ru.myx.ae3.vfs.s4.common.RecImpl;
 import ru.myx.ae3.vfs.s4.common.RecInline;
 import ru.myx.ae3.vfs.s4.common.RefImpl;
 
-final class TaskLocalRecordSearchBetween extends TaskCommon<ArrRecImpl<RecImpl>> implements Function<Value<RecImpl>, Void> {
+final class TaskLocalRecordSearchBetween extends TaskCommon<ArrRecImpl<RecImpl>> implements Function<RecImpl, Void> {
 
 	private static final int LONG_ITERATION = 1000;
 
 	private static final int LONG_THRESHOLD = 3000;
 
-	private RecImpl searchStart;
+	private Guid searchStart;
 
-	private final RecImpl searchStop;
+	private final Guid searchStop;
 
 	private int leftCurrent;
 
@@ -47,26 +47,26 @@ final class TaskLocalRecordSearchBetween extends TaskCommon<ArrRecImpl<RecImpl>>
 		assert record.getClass() != RecInline.class : "GetLinks - INLINE source!";
 		this.local = local;
 		this.record = record;
-		this.searchStart = keyStart;
-		this.searchStop = keyStop;
+		this.searchStart = keyStart == null
+			? null
+			: keyStart.guid;
+		this.searchStop = keyStop == null
+			? null
+			: keyStop.guid;
 		this.leftTotal = limit;
 		this.mode = mode;
 		this.result = new ArrRecImpl<>();
 	}
 
+	/** Note: 'record.guid' here is NOT the record's real identity - on this search-index lookup
+	 * path it carries the matched index value instead, see
+	 * {@link S4WorkerInterface#searchBetween}. */
 	@Override
-	public Void apply(final Value<RecImpl> record) {
+	public Void apply(final RecImpl record) {
 
-		assert record != null : "reference is null!";
-		assert record.driver == null : "implementation must not set 'driver' field";
-		assert record.collection == null : "implementation must not set 'collection' field";
-		assert record.key != null : "record exists but key is NULL";
-		assert record.mode != null : "record exists but mode is NULL";
-		assert record.value != null : "record exists but target is NULL";
-		record.driver = this.local;
-		record.collection = this.record;
+		assert record != null : "record is null!";
 		if (--this.leftCurrent == 0) {
-			this.searchStart = record.getKey();
+			this.searchStart = record.guid;
 		} else {
 			this.result.add(record);
 		}
@@ -101,12 +101,8 @@ final class TaskLocalRecordSearchBetween extends TaskCommon<ArrRecImpl<RecImpl>>
 		final int count = xct.searchBetween(
 				this,
 				this.record.guid,
-				this.searchStart == null
-					? null
-					: this.searchStart.guid,
-				this.searchStop == null
-					? null
-					: this.searchStop.guid,
+				this.searchStart,
+				this.searchStop,
 				limit//
 		);
 
