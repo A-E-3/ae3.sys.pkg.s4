@@ -1,0 +1,10 @@
+Name: ae3.sys.pkg.s4
+Requires: \
+	ae3.api \
+	ae3.sdk \
+
+Provides: \
+	ae3.sys.pkg.s4 \
+	--source-process:compile-java \
+	source-process:ae3-packages \
+
